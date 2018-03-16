@@ -23,14 +23,15 @@ int ExecuteBranchNBound::execute()
 	dec_tree_->cost_matrix = tmp_matrix;
 	dec_tree_->current_node_arc = nullptr;
 	dec_tree_->lower_bound = weight;
-	dec_tree_->parent_node_ = nullptr;
+	//dec_tree_->parent_node_ = nullptr;
 	dec_tree_->path_arcs = new List<Arc>();
 
 	//Start creating tree
 	Tree* cur_ptr = dec_tree_;
 	while(true)
 	{
-		int trip_weight = execute_with_additional_memory(cur_ptr);
+		Tree* right_leaf;
+		int trip_weight = execute_with_additional_memory(cur_ptr, &right_leaf);
 		int possible_min_val;
 		Tree* next_node = get_next_tree_node(&possible_min_val);
 
@@ -51,7 +52,7 @@ int ExecuteBranchNBound::execute()
 		if(trip_weight != -1 && trip_weight < best_trip_)
 		{
 			best_trip_ = trip_weight;
-			best_trip_leaf_ = cur_ptr->right_tree_;
+			best_trip_leaf_ = right_leaf;
 		}
 
 		if(best_trip_ <= possible_min_val)
@@ -71,7 +72,13 @@ void ExecuteBranchNBound::set_cost_matrix(Matrix* matrix)
 	cost_matrix_ = matrix;
 }
 
-int ExecuteBranchNBound::execute_with_additional_memory(Tree* cur_node)
+void ExecuteBranchNBound::print_results()
+{
+	std::cout << "Best trip weight = " << best_trip_ << "\n" << "Vertex count = " << overall_vertex_count_ << "\n";
+
+}
+
+int ExecuteBranchNBound::execute_with_additional_memory(Tree* cur_node, Tree** right_leaf)
 {
 	if (cur_node->current_node_arc == nullptr)
 		std::cout << "Start" << " -> ";
@@ -88,7 +95,6 @@ int ExecuteBranchNBound::execute_with_additional_memory(Tree* cur_node)
 
 	//Define set Y with branching arc
 	Tree* tmp_right_tree = new Tree();
-	tmp_right_tree->parent_node_ = cur_node;
 	tmp_right_tree->current_node_arc = next_arc->clone(true);
 	tmp_right_tree->path_arcs = cur_node->path_arcs->clone();
 	Arc* cor_arc = tmp_right_tree->path_arcs->add(next_arc);
@@ -104,14 +110,12 @@ int ExecuteBranchNBound::execute_with_additional_memory(Tree* cur_node)
 	tmp_right_tree->cost_matrix = tmp_matrix;
 	tmp_right_tree->lower_bound = cur_node->lower_bound + h_est;
 
-	std::cout << "(right)" << tmp_right_tree->lower_bound << " : ";
+	*right_leaf = tmp_right_tree;
 
-	//Write new node in tree
-	cur_node->right_tree_ = tmp_right_tree;
+	std::cout << "(right)" << tmp_right_tree->lower_bound << " : ";
 
 	//Define set Y without branching arc 
 	Tree* tmp_left_tree = new Tree();
-	tmp_left_tree->parent_node_ = cur_node;
 	tmp_left_tree->current_node_arc = next_arc->clone(false);
 	tmp_left_tree->cost_matrix = cur_node->cost_matrix;
 
@@ -128,14 +132,9 @@ int ExecuteBranchNBound::execute_with_additional_memory(Tree* cur_node)
 
 	std::cout << "(left)" << tmp_left_tree->lower_bound << "\n";
 
-	//Write new node in tree
-	cur_node->left_tree_ = tmp_left_tree;
+	delete cur_node;
 
-	//Clearing
-	//TODO Check matrix delete
-	//Delete matrix in parent node
-	cur_node->cost_matrix = nullptr;
-	cur_node->path_arcs = nullptr;
+	overall_vertex_count_++;
 
 	//Update list of leaf elems
 	leaf_elems.remove(cur_node);
@@ -153,6 +152,7 @@ int ExecuteBranchNBound::execute_with_additional_memory(Tree* cur_node)
 		tmp_right_tree->path_weight = matr_min_elem + tmp_right_tree->lower_bound;
 		return matr_min_elem + tmp_right_tree->lower_bound;
 	}
+	overall_vertex_count_++;
 	leaf_elems.push_back(tmp_right_tree);
 
 	return -1;

@@ -13,8 +13,9 @@ private:
 	std::list<Tree*> leaf_elems;
 	int best_trip_;
 	Tree* best_trip_leaf_;
+	unsigned int overall_vertex_count_;
 
-	int execute_with_additional_memory(Tree*);
+	int execute_with_additional_memory(Tree*, Tree**);
 	Tree* get_next_tree_node(int*);
 
 public:
@@ -22,5 +23,6 @@ public:
 	~ExecuteBranchNBound();
 	int execute();
 	void set_cost_matrix(Matrix*);
+	void print_results();
 };
 
