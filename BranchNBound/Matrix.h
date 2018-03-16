@@ -4,14 +4,14 @@
 class Matrix
 {
 private:
-	int** matrix;
+	double** matrix;
 	int n_rows; //Number of rows
 	int n_columns; // Number of columns
 
-	int find_row_min_elem(int);
-	int find_column_min_elem(int);
-	int find_row_min_elem(int, int, int);
-	int find_column_min_elem(int, int, int);
+	double find_row_min_elem(int);
+	double find_column_min_elem(int);
+	double find_row_min_elem(int, int, int);
+	double find_column_min_elem(int, int, int);
 	void get_idxs(int, int, int*, int*);
 	Matrix(int, int);
 
@@ -23,11 +23,12 @@ public:
 	Matrix* clone();
 	Matrix* create_cutted_copy(int, int);
 	void matrix_reduction(int*);
-	Arc* get_next_arc(int*);
-	int get_matrix_min_elem(Arc*);
-	int get_matrix_min_path(Arc***);
-	void set_value(int, int, int);
+	Arc* get_next_arc(double*);
+	double get_matrix_min_elem(Arc*);
+	double get_matrix_min_path(Arc***);
+	void set_value(int, int, double);
 	void print_matrix();
 	void creat_test_matrix();
+	void create_asim_matrix(double, int, double);
 };
 

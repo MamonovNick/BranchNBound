@@ -15,5 +15,5 @@ Tree::Tree(Tree* parent_node)
 
 Tree::~Tree()
 {
-	delete current_node_arc;
+
 }

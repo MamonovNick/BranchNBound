@@ -9,9 +9,9 @@
 
 Matrix::Matrix(int n, int m) : n_rows(n), n_columns(m)
 {
-	matrix = new int*[n_rows];
+	matrix = new double*[n_rows];
 	for(int i = 0; i < n_rows; i++)
-		matrix[i] = new int[n_columns];
+		matrix[i] = new double[n_columns];
 }
 
 int Matrix::rows()
@@ -26,9 +26,9 @@ int Matrix::columns()
 
 Matrix::Matrix(int n) : n_rows(n+1), n_columns(n+1)
 {
-	matrix = new int*[n_rows];
+	matrix = new double*[n_rows];
 	for (int i = 0; i < n_rows; i++)
-		matrix[i] = new int[n_columns];
+		matrix[i] = new double[n_columns];
 }
 
 Matrix::~Matrix()
@@ -80,18 +80,18 @@ Matrix* Matrix::create_cutted_copy(int row, int column)
 	return result;
 }
 
-int Matrix::find_row_min_elem(int row)
+double Matrix::find_row_min_elem(int row)
 {
-	int result = INT_MAX;
+	double result = DBL_MAX;
 	for (int i = 1; i < n_columns; i++)
 		if (matrix[row][i] < result)
 			result = matrix[row][i];
 	return result;
 }
 
-int Matrix::find_row_min_elem(int row, int cur_row, int cur_column)
+double Matrix::find_row_min_elem(int row, int cur_row, int cur_column)
 {
-	int result = INT_MAX;
+	double result = DBL_MAX;
 	for (int i = 1; i < n_columns; i++)
 	{
 		if (row == cur_row && i == cur_column)
@@ -102,18 +102,18 @@ int Matrix::find_row_min_elem(int row, int cur_row, int cur_column)
 	return result;
 }
 
-int Matrix::find_column_min_elem(int column)
+double Matrix::find_column_min_elem(int column)
 {
-	int result = INT_MAX;
+	double result = DBL_MAX;
 	for (int i = 1; i < n_rows; i++)
 		if (matrix[i][column] < result)
 			result = matrix[i][column];
 	return result;
 }
 
-int Matrix::find_column_min_elem(int column, int cur_row, int cur_column)
+double Matrix::find_column_min_elem(int column, int cur_row, int cur_column)
 {
-	int result = INT_MAX;
+	double result = DBL_MAX;
 	for (int i = 1; i < n_rows; i++)
 	{
 		if (i == cur_row && column == cur_column)
@@ -129,19 +129,19 @@ void Matrix::matrix_reduction(int* reduce_value)
 {
 	*reduce_value = 0;
 
-	int* columns_min_elems = new int[n_columns-1];
+	double* columns_min_elems = new double[n_columns-1];
 	for (int i = 0; i < n_columns-1; i++)
-		columns_min_elems[i] = INT_MAX;
+		columns_min_elems[i] = DBL_MAX;
 
 	for (int i = 1; i < n_rows; i++)
 	{
-		int min_elem = find_row_min_elem(i);
+		double min_elem = find_row_min_elem(i);
 
 		*reduce_value += min_elem;
 
 		for (int j = 1; j < n_columns; j++)
 		{
-			if (matrix[i][j] == INT_MAX)
+			if (matrix[i][j] == DBL_MAX)
 				continue;
 
 			matrix[i][j] -= min_elem;
@@ -155,7 +155,7 @@ void Matrix::matrix_reduction(int* reduce_value)
 		*reduce_value += columns_min_elems[j-1];
 		for (int i = 1; i < n_rows; i++)
 		{
-			if (matrix[i][j] == INT_MAX)
+			if (matrix[i][j] == DBL_MAX)
 				continue;
 
 			matrix[i][j] -= columns_min_elems[j-1];
@@ -165,19 +165,19 @@ void Matrix::matrix_reduction(int* reduce_value)
 
 //Method for finding next arc
 //Cost matrix should be reduced previously
-Arc* Matrix::get_next_arc(int* estimate)
+Arc* Matrix::get_next_arc(double* estimate)
 {
 	Arc* result = new Arc();
-	int max_est = INT_MIN;
+	double max_est = DBL_MIN;
 
 	for (int i = 1; i < n_rows; i++)	
 		for (int j = 1; j < n_columns; j++)
 		{
 			if (matrix[i][j] != 0)
 				continue;
-			int row_min_elem = find_row_min_elem(i, i, j);
-			int column_min_elem = find_column_min_elem(j, i, j);
-			int tmp_est = row_min_elem + column_min_elem;
+			double row_min_elem = find_row_min_elem(i, i, j);
+			double column_min_elem = find_column_min_elem(j, i, j);
+			double tmp_est = row_min_elem + column_min_elem;
 			if(tmp_est > max_est)
 			{
 				result->first = matrix[i][0];
@@ -190,15 +190,15 @@ Arc* Matrix::get_next_arc(int* estimate)
 	return result;
 }
 
-int Matrix::get_matrix_min_elem(Arc* min_arc)
+double Matrix::get_matrix_min_elem(Arc* min_arc)
 {
 	min_arc = new Arc();
-	int min_value = INT_MAX;
+	double min_value = DBL_MAX;
 
 	for (int i = 1; i < n_rows; i++)
 		for(int j = 1; j < n_columns; j++)
 		{
-			if (matrix[i][j] == INT_MAX)
+			if (matrix[i][j] == DBL_MAX)
 				continue;
 			if(matrix[i][j] < min_value)
 			{
@@ -211,26 +211,26 @@ int Matrix::get_matrix_min_elem(Arc* min_arc)
 	return min_value;
 }
 
-int Matrix::get_matrix_min_path(Arc*** arcs)
+double Matrix::get_matrix_min_path(Arc*** arcs)
 {
 	if (n_rows > 3)
 		return -1;
 
 	if(n_rows == 3 && n_columns == 3)
 	{
-		int min_val = 0;
-		int diag1, diag2;
+		double min_val = 0;
+		double diag1, diag2;
 
-		if (matrix[1][1] == INT_MAX || matrix[2][2] == INT_MAX)
-			diag1 = INT_MAX;
+		if (matrix[1][1] == DBL_MAX || matrix[2][2] == DBL_MAX)
+			diag1 = DBL_MAX;
 		else
 			diag1 = matrix[1][1] + matrix[2][2];
-		if (matrix[2][1] == INT_MAX || matrix[1][2] == INT_MAX)
-			diag2 = INT_MAX;
+		if (matrix[2][1] == DBL_MAX || matrix[1][2] == DBL_MAX)
+			diag2 = DBL_MAX;
 		else
 			diag2 = matrix[2][1] + matrix[1][2];
 
-		if (diag1 == INT_MAX && diag2 == INT_MAX)
+		if (diag1 == DBL_MAX && diag2 == DBL_MAX)
 			return -1;
 
 		if(diag1 < diag2)
@@ -252,7 +252,7 @@ int Matrix::get_matrix_min_path(Arc*** arcs)
 	return -1;
 }
 
-void Matrix::set_value(int row, int column, int value)
+void Matrix::set_value(int row, int column, double value)
 {
 	int set_row = -1, set_column = -1;
 	get_idxs(row, column, &set_row, &set_column);
@@ -287,7 +287,7 @@ void Matrix::print_matrix()
 	{
 		for (int j = 0; j < n_columns; j++)
 		{
-			if (matrix[i][j] == INT_MAX)
+			if (matrix[i][j] == DBL_MAX)
 			{
 				std::cout << "inf  ";
 				continue;
@@ -350,6 +350,69 @@ void Matrix::creat_test_matrix()
 			}
 			matrix[i][j] = rand() % 20 + 1;
 		}
+	}
+}
+
+void Matrix::create_asim_matrix(double delta, int mode, double max_value)
+{
+	for (int i = 0; i < n_columns; i++)
+		matrix[0][i] = i;
+	for (int i = 0; i < n_rows; i++)
+		matrix[i][0] = i;
+
+	double rnd_value;
+	double eps;
+
+	switch(mode)
+	{
+	case 1:
+		eps = delta / 2.0;
+		for (int i = 1; i < n_rows-1; i++)
+			for(int j = i; j < n_columns; j++)
+			{
+				if (i == j)
+				{
+					matrix[i][j] = DBL_MAX;
+					continue;
+				}
+				rnd_value = rand() % 20 + 1;
+				matrix[i][j] = rnd_value + eps;
+				matrix[j][i] = rnd_value - eps;
+			}
+		break;
+	case 2:
+		eps = delta / 2.0;
+		for (int i = 1; i < n_rows - 1; i++)
+			for (int j = i; j < n_columns; j++)
+			{
+				if (i == j)
+				{
+					matrix[i][j] = DBL_MAX;
+					continue;
+				}
+				rnd_value = rand() % 20 + 1;
+				matrix[i][j] = rnd_value - eps;
+				matrix[j][i] = rnd_value + eps;
+			}
+		break;
+	case 3:
+		eps = delta;
+		for (int i = 1; i < n_rows - 1; i++)
+			for (int j = i; j < n_columns; j++)
+			{
+				if (i == j)
+				{
+					matrix[i][j] = DBL_MAX;
+					continue;
+				}
+				rnd_value = rand() % 20 + 1;
+				matrix[i][j] = rnd_value - eps;
+				matrix[j][i] = rnd_value + eps;
+			}
+		break;
+		break;
+	default:
+		break;
 	}
 }
 

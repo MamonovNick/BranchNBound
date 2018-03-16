@@ -10,9 +10,9 @@ private:
 
 
 public:
-	//Tree* parent_node_;
-	//Tree* left_tree_;
-	//Tree* right_tree_;
+	Tree* parent_node_;
+	Tree* left_tree_;
+	Tree* right_tree_;
 	Matrix* cost_matrix;
 	Arc* current_node_arc;
 	List<Arc>* path_arcs;
