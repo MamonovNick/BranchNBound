@@ -43,14 +43,15 @@ List<T>::List()
 	//list = new Node<T>();
 }
 
-template <typename T>
-List<T>::~List()
+//template <typename T>
+List<Arc>::~List()
 {
-	while(list)
+	Node<Arc>* ptr = list;
+	while(ptr)
 	{
-		Node<T>* tmp_ptr = list->next;
-		delete tmp_ptr;
-		list = tmp_ptr;
+		Node<Arc>* tmp_ptr = ptr->next;
+		delete ptr;
+		ptr = tmp_ptr;
 	}
 }
 
@@ -153,6 +154,7 @@ void List<Arc>::simple_add(Arc* arc)
 	new_elem->elem = new Arc();
 	new_elem->elem->first = arc->first;
 	new_elem->elem->second = arc->second;
+	new_elem->next = nullptr;
 
 	if (tmp_ptr == nullptr)
 	{

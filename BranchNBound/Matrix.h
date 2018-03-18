@@ -22,13 +22,15 @@ public:
 	~Matrix();
 	Matrix* clone();
 	Matrix* create_cutted_copy(int, int);
-	void matrix_reduction(int*);
+	void matrix_reduction(double*);
 	Arc* get_next_arc(double*);
 	double get_matrix_min_elem(Arc*);
 	double get_matrix_min_path(Arc***);
 	void set_value(int, int, double);
 	void print_matrix();
 	void creat_test_matrix();
-	void create_asim_matrix(double, int, double);
+	void create_asyn_matrix(double, int, double);
+	void create_symmetric();
+	void add_delta(double, int);
 };
 

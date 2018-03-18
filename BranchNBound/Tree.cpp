@@ -7,13 +7,9 @@ Tree::Tree()
 
 }
 
-Tree::Tree(Tree* parent_node)
-{
-
-}
-
-
 Tree::~Tree()
 {
-
+	delete cost_matrix;
+	delete current_node_arc;
+	delete path_arcs;
 }
