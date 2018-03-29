@@ -79,10 +79,10 @@ void ExecuteBranchNBound::set_cost_matrix(Matrix* matrix)
 
 double ExecuteBranchNBound::execute_with_additional_memory(Tree* cur_node)
 {
-	if (cur_node->current_node_arc == nullptr)
+	/*if (cur_node->current_node_arc == nullptr)
 		std::cout << "Start" << " -> ";
 	else
-		std::cout << cur_node->current_node_arc->toString() << " -> ";
+		std::cout << cur_node->current_node_arc->toString() << " -> ";*/
 
 	Matrix* cur_matrix = cur_node->cost_matrix;
 	//cur_matrix->print_matrix();
@@ -90,7 +90,7 @@ double ExecuteBranchNBound::execute_with_additional_memory(Tree* cur_node)
 	double estimate;
 	Arc* next_arc = cur_matrix->get_next_arc(&estimate);
 
-	std::cout << next_arc->toString() << " : ";
+	//std::cout << next_arc->toString() << " : ";
 
 	//Define set Y with branching arc
 	Tree* tmp_right_tree = new Tree();
@@ -109,7 +109,7 @@ double ExecuteBranchNBound::execute_with_additional_memory(Tree* cur_node)
 	tmp_right_tree->cost_matrix = tmp_matrix;
 	tmp_right_tree->lower_bound = cur_node->lower_bound + h_est;
 
-	std::cout << "(right)" << tmp_right_tree->lower_bound << " : ";
+	//std::cout << "(right)" << tmp_right_tree->lower_bound << " : ";
 
 	//Define set Y without branching arc 
 	Tree* tmp_left_tree = new Tree();
@@ -130,7 +130,7 @@ double ExecuteBranchNBound::execute_with_additional_memory(Tree* cur_node)
 	//Calc estimate
 	tmp_left_tree->lower_bound = cur_node->lower_bound + estimate + h;
 
-	std::cout << "(left)" << tmp_left_tree->lower_bound << "\n";
+	//std::cout << "(left)" << tmp_left_tree->lower_bound << "\n";
 
 	//Clearing
 	//TODO Check matrix delete
@@ -153,8 +153,8 @@ double ExecuteBranchNBound::execute_with_additional_memory(Tree* cur_node)
 		double matr_min_elem = tmp_matrix->get_matrix_min_path(&arcs);
 		if (matr_min_elem == -1)
 			return -1;
-		if(arcs != nullptr)
-			std::cout << "Left arcs" << arcs[0]->toString() << " and " << arcs[1]->toString() << "\n";
+		//if(arcs != nullptr)
+		//	std::cout << "Left arcs" << arcs[0]->toString() << " and " << arcs[1]->toString() << "\n";
 		if(arcs != nullptr)
 		{
 			delete arcs[0];

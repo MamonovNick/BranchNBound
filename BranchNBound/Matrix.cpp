@@ -440,7 +440,7 @@ void Matrix::create_symmetric()
 				matrix[i][j] = DBL_MAX;
 				continue;
 			}
-			double rnd_value = rand() % 25 + 2;
+			double rnd_value = rand() % 35 + 6;
 			matrix[i][j] = rnd_value;
 			matrix[j][i] = rnd_value;
 		}
