@@ -33,4 +33,3 @@ public:
 	void create_symmetric();
 	void add_delta(double, int);
 };
-

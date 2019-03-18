@@ -1,20 +1,5 @@
 #pragma once
-#include "Arc.h"
-
-template <typename T>
-class Node
-{
-public:
-	T * elem;
-	Node<T>* next;
-	Node<T>* prev;
-	Node();
-	~Node();
-	//int first();
-	//int second();
-	//void set(int, int);
-	Node<T>* clone();
-};
+#include "Node.h"
 
 template <typename T>
 class List

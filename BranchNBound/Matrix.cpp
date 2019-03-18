@@ -1,7 +1,5 @@
 #include "stdafx.h"
 #include "Matrix.h"
-#include <climits>
-#include <xutility>
 #include "Arc.h"
 #include <iostream>
 #include <random>
@@ -10,7 +8,7 @@
 Matrix::Matrix(int n, int m) : n_rows(n), n_columns(m)
 {
 	matrix = new double*[n_rows];
-	for(int i = 0; i < n_rows; i++)
+	for (int i = 0; i < n_rows; i++)
 		matrix[i] = new double[n_columns];
 }
 
@@ -24,7 +22,7 @@ int Matrix::columns()
 	return n_columns - 1;
 }
 
-Matrix::Matrix(int n) : n_rows(n+1), n_columns(n+1)
+Matrix::Matrix(int n) : n_rows(n + 1), n_columns(n + 1)
 {
 	matrix = new double*[n_rows];
 	for (int i = 0; i < n_rows; i++)
@@ -33,7 +31,7 @@ Matrix::Matrix(int n) : n_rows(n+1), n_columns(n+1)
 
 Matrix::~Matrix()
 {
-	if(matrix != nullptr)
+	if (matrix != nullptr)
 	{
 		for (int i = 0; i < n_rows; i++)
 			delete[] matrix[i];
@@ -75,7 +73,7 @@ Matrix* Matrix::create_cutted_copy(int row, int column)
 				corr_j = -1;
 				continue;
 			}
-			result->matrix[i+corr_i][j+corr_j] = matrix[i][j];
+			result->matrix[i + corr_i][j + corr_j] = matrix[i][j];
 		}
 	}
 
@@ -131,8 +129,8 @@ void Matrix::matrix_reduction(double* reduce_value)
 {
 	*reduce_value = 0;
 
-	double* columns_min_elems = new double[n_columns-1];
-	for (int i = 0; i < n_columns-1; i++)
+	double* columns_min_elems = new double[n_columns - 1];
+	for (int i = 0; i < n_columns - 1; i++)
 		columns_min_elems[i] = DBL_MAX;
 
 	for (int i = 1; i < n_rows; i++)
@@ -147,20 +145,20 @@ void Matrix::matrix_reduction(double* reduce_value)
 				continue;
 
 			matrix[i][j] -= min_elem;
-			if (matrix[i][j] < columns_min_elems[j-1])
-				columns_min_elems[j-1] = matrix[i][j];
+			if (matrix[i][j] < columns_min_elems[j - 1])
+				columns_min_elems[j - 1] = matrix[i][j];
 		}
 	}
 
 	for (int j = 1; j < n_columns; j++)
 	{
-		*reduce_value += columns_min_elems[j-1];
+		*reduce_value += columns_min_elems[j - 1];
 		for (int i = 1; i < n_rows; i++)
 		{
 			if (matrix[i][j] == DBL_MAX)
 				continue;
 
-			matrix[i][j] -= columns_min_elems[j-1];
+			matrix[i][j] -= columns_min_elems[j - 1];
 		}
 	}
 
@@ -176,7 +174,7 @@ Arc* Matrix::get_next_arc(double* estimate)
 	Arc* result = new Arc();
 	double max_est = std::numeric_limits<double>::lowest();
 
-	for (int i = 1; i < n_rows; i++)	
+	for (int i = 1; i < n_rows; i++)
 		for (int j = 1; j < n_columns; j++)
 		{
 			if (matrix[i][j] != 0)
@@ -184,7 +182,7 @@ Arc* Matrix::get_next_arc(double* estimate)
 			double row_min_elem = find_row_min_elem(i, i, j);
 			double column_min_elem = find_column_min_elem(j, i, j);
 			double tmp_est = row_min_elem + column_min_elem;
-			if(tmp_est > max_est)
+			if (tmp_est > max_est)
 			{
 				result->first = static_cast<int>(matrix[i][0]);
 				result->second = static_cast<int>(matrix[0][j]);
@@ -205,11 +203,11 @@ double Matrix::get_matrix_min_elem(Arc* min_arc)
 	double min_value = DBL_MAX;
 
 	for (int i = 1; i < n_rows; i++)
-		for(int j = 1; j < n_columns; j++)
+		for (int j = 1; j < n_columns; j++)
 		{
 			if (matrix[i][j] == DBL_MAX)
 				continue;
-			if(matrix[i][j] < min_value)
+			if (matrix[i][j] < min_value)
 			{
 				min_value = matrix[i][j];
 				min_arc->first = static_cast<int>(matrix[i][0]);
@@ -225,7 +223,7 @@ double Matrix::get_matrix_min_path(Arc*** arcs)
 	if (n_rows > 3)
 		return -1;
 
-	if(n_rows == 3 && n_columns == 3)
+	if (n_rows == 3 && n_columns == 3)
 	{
 		double min_val = 0;
 		double diag1, diag2;
@@ -242,7 +240,7 @@ double Matrix::get_matrix_min_path(Arc*** arcs)
 		if (diag1 == DBL_MAX && diag2 == DBL_MAX)
 			return -1;
 
-		if(diag1 < diag2)
+		if (diag1 < diag2)
 		{
 			*arcs = new Arc*[2];
 			(*arcs)[0] = new Arc(static_cast<int>(matrix[1][0]), static_cast<int>(matrix[0][1]), true);
@@ -321,46 +319,46 @@ void Matrix::creat_test_matrix()
 	matrix[6] = new int[7]{ 6, 23,	5,	5,	9,	5,	INT_MAX };
 	 */
 
-	/*matrix[0] = new int[7]{ 0, 1, 2, 3, 4, 5, 6 };
-	matrix[1] = new int[7]{ 1, INT_MAX,	7,	16,	21,	2,	17 };
-	matrix[2] = new int[7]{ 2, 13, INT_MAX, 21, 15, 43, 23 };
-	matrix[3] = new int[7]{ 3, 25, 3, INT_MAX, 31, 17, 9 };
-	matrix[4] = new int[7]{ 4, 13, 10, 27, INT_MAX, 33, 12 };
-	matrix[5] = new int[7]{ 5, 9, 2, 19, 14, INT_MAX, 51 };
-	matrix[6] = new int[7]{ 6, 42, 17, 5, 9, 23, INT_MAX };*/
+	 /*matrix[0] = new int[7]{ 0, 1, 2, 3, 4, 5, 6 };
+	 matrix[1] = new int[7]{ 1, INT_MAX,	7,	16,	21,	2,	17 };
+	 matrix[2] = new int[7]{ 2, 13, INT_MAX, 21, 15, 43, 23 };
+	 matrix[3] = new int[7]{ 3, 25, 3, INT_MAX, 31, 17, 9 };
+	 matrix[4] = new int[7]{ 4, 13, 10, 27, INT_MAX, 33, 12 };
+	 matrix[5] = new int[7]{ 5, 9, 2, 19, 14, INT_MAX, 51 };
+	 matrix[6] = new int[7]{ 6, 42, 17, 5, 9, 23, INT_MAX };*/
 
-	/*
-	matrix[0] = new double[6] {0, 1, 2, 3, 4, 5};
-	matrix[1] = new double[6] {1, DBL_MAX, 25, 40, 31, 27};
-	matrix[2] = new double[6] {2, 5, DBL_MAX, 17, 30, 25};
-	matrix[3] = new double[6] {3, 19, 15, DBL_MAX, 6, 1};
-	matrix[4] = new double[6] {4, 9, 50, 24, DBL_MAX, 6};
-	matrix[5] = new double[6] {5, 22, 8, 7, 10, DBL_MAX };*/
+	 /*
+	 matrix[0] = new double[6] {0, 1, 2, 3, 4, 5};
+	 matrix[1] = new double[6] {1, DBL_MAX, 25, 40, 31, 27};
+	 matrix[2] = new double[6] {2, 5, DBL_MAX, 17, 30, 25};
+	 matrix[3] = new double[6] {3, 19, 15, DBL_MAX, 6, 1};
+	 matrix[4] = new double[6] {4, 9, 50, 24, DBL_MAX, 6};
+	 matrix[5] = new double[6] {5, 22, 8, 7, 10, DBL_MAX };*/
 
-	/*
-	srand(time(0));
-	for (int i = 0; i < n_rows; i++)
-	{
-		for (int j = 0; j < n_columns; j++)
-		{
-			if (j == 0)
-			{
-				matrix[i][j] = i;
-				continue;
-			}
-			if (i == 0)
-			{
-				matrix[i][j] = j;
-				continue;
-			}
-			if (i == j)
-			{
-				matrix[i][j] = DBL_MAX;
-				continue;
-			}
-			matrix[i][j] = rand() % 20 + 1;
-		}
-	}*/
+	 /*
+	 srand(time(0));
+	 for (int i = 0; i < n_rows; i++)
+	 {
+		 for (int j = 0; j < n_columns; j++)
+		 {
+			 if (j == 0)
+			 {
+				 matrix[i][j] = i;
+				 continue;
+			 }
+			 if (i == 0)
+			 {
+				 matrix[i][j] = j;
+				 continue;
+			 }
+			 if (i == j)
+			 {
+				 matrix[i][j] = DBL_MAX;
+				 continue;
+			 }
+			 matrix[i][j] = rand() % 20 + 1;
+		 }
+	 }*/
 }
 
 void Matrix::create_asyn_matrix(double delta, int mode, double max_value)
@@ -373,12 +371,12 @@ void Matrix::create_asyn_matrix(double delta, int mode, double max_value)
 	double rnd_value;
 	double eps;
 
-	switch(mode)
+	switch (mode)
 	{
 	case 1:
 		eps = delta / 2.0;
 		for (int i = 1; i < n_rows; i++)
-			for(int j = i; j < n_columns; j++)
+			for (int j = i; j < n_columns; j++)
 			{
 				if (i == j)
 				{
@@ -427,6 +425,7 @@ void Matrix::create_asyn_matrix(double delta, int mode, double max_value)
 
 void Matrix::create_symmetric()
 {
+	//Store indecies in matrix
 	for (int i = 0; i < n_columns; i++)
 		matrix[0][i] = i;
 	for (int i = 0; i < n_rows; i++)
@@ -440,6 +439,7 @@ void Matrix::create_symmetric()
 				matrix[i][j] = DBL_MAX;
 				continue;
 			}
+			//Random generation
 			double rnd_value = rand() % 35 + 6;
 			matrix[i][j] = rnd_value;
 			matrix[j][i] = rnd_value;
@@ -486,9 +486,18 @@ void Matrix::add_delta(double delta, int mode)
 				matrix[j][i] += eps;
 			}
 		break;
+	case 4:
+		eps = delta;
+		for (int i = 1; i < n_rows - 1; i++)
+			for (int j = i; j < n_columns; j++)
+			{
+				if (i == j)
+					continue;
+				matrix[i][j] += eps;
+				//matrix[j][i] += eps;
+			}
+		break;
 	default:
 		break;
 	}
 }
-
-

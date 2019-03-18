@@ -2,45 +2,10 @@
 #include "List.h"
 #include "Arc.h"
 
-template <typename T>
-Node<T>::Node()
-{
-}
-
-template <typename T>
-Node<T>::~Node()
-{
-	if (elem)
-		delete elem;
-}
-
-//inline int Node<Arc>::first()
-//{
-//	return elem->first;
-//}
-//
-//inline int Node<Arc>::second()
-//{
-//	return elem->second;
-//}
-//
-//void Node<Arc>::set(int item, int value)
-//{
-//	if (item == 1)
-//		elem->first = value;
-//	if (item == 2)
-//		elem->second = value;
-//}
-
-Node<Arc>* Node<Arc>::clone()
-{
-	return nullptr;
-}
-
 template<typename T>
 List<T>::List()
 {
-	//list = new Node<T>();
+
 }
 
 //template <typename T>

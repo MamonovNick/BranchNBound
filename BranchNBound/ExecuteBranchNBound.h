@@ -1,15 +1,14 @@
 #pragma once
 #include "Matrix.h"
 #include "Tree.h"
-#include "List.h"
-#include <list>
+#include "OrderedList.h"
 
 class ExecuteBranchNBound
 {
 private:
 	double min_path_cost_;
 	Matrix* cost_matrix_;
-	std::list<Tree*> leaf_elems;
+	OrderedList<Tree>* leaf_elems;
 	double best_trip_;
 	int tree_elems_count_;
 

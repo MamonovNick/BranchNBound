@@ -6,19 +6,14 @@
 ExecuteBranchNBound::ExecuteBranchNBound()
 	: best_trip_(INT_MAX)
 {
+	leaf_elems = new OrderedList<Tree>(&Tree::lower_bound);
 }
 
 
 ExecuteBranchNBound::~ExecuteBranchNBound()
 {
 	delete cost_matrix_;
-	std::list<Tree*>::iterator iter = leaf_elems.begin();
-	while (iter != leaf_elems.end())
-	{
-		delete *iter;
-		++iter;
-	}
-	leaf_elems.clear();
+	delete leaf_elems;
 }
 
 double ExecuteBranchNBound::execute()
@@ -139,13 +134,12 @@ double ExecuteBranchNBound::execute_with_additional_memory(Tree* cur_node)
 	cur_node->path_arcs = nullptr;
 
 	//Update list of leaf elems
-	leaf_elems.remove(cur_node);
-	leaf_elems.push_back(tmp_left_tree);
+	(*leaf_elems).add(tmp_left_tree);
 	delete cur_node;
 
 	tree_elems_count_ += 2;
 
-	leaf_elems.push_back(tmp_right_tree);
+	(*leaf_elems).add(tmp_right_tree);
 
 	if(tmp_matrix->rows() <= 2)
 	{
@@ -171,19 +165,10 @@ double ExecuteBranchNBound::execute_with_additional_memory(Tree* cur_node)
 
 Tree* ExecuteBranchNBound::get_next_tree_node(double* result_value)
 {
-	double min_value = DBL_MAX;
-	Tree* result = nullptr;
-	std::list<Tree*>::iterator iter = leaf_elems.begin();
-	while(iter != leaf_elems.end())
-	{
-		if((*iter)->lower_bound < min_value)
-		{
-			min_value = (*iter)->lower_bound;
-			result = *iter;
-		}
-		++iter;
-	}
-
-	*result_value = min_value;
+	Tree* result = (*leaf_elems).pull_first();
+	if (result)
+		*result_value = result->lower_bound;
+	else
+		*result_value = DBL_MAX;
 	return result;
 }
