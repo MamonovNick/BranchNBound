@@ -4,7 +4,7 @@
 #include <iostream>
 
 ExecuteBranchNBound::ExecuteBranchNBound()
-	: best_trip_(INT_MAX)
+	: best_trip_(DBL_MAX)
 {
 	leaf_elems = new OrderedList<Tree>(&Tree::lower_bound);
 }
@@ -32,7 +32,7 @@ double ExecuteBranchNBound::execute()
 	//Start creating tree
 	while(true)
 	{
-		double trip_weight = execute_with_additional_memory(cur_ptr);
+		double trip_weight = execute_with_additional_memory(cur_ptr, best_trip_);
 		double possible_min_val;
 		Tree* next_node = get_next_tree_node(&possible_min_val);
 
@@ -72,7 +72,7 @@ void ExecuteBranchNBound::set_cost_matrix(Matrix* matrix)
 	cost_matrix_ = matrix;
 }
 
-double ExecuteBranchNBound::execute_with_additional_memory(Tree* cur_node)
+double ExecuteBranchNBound::execute_with_additional_memory(Tree* cur_node, double cur_best_trip)
 {
 	/*if (cur_node->current_node_arc == nullptr)
 		std::cout << "Start" << " -> ";
@@ -133,13 +133,19 @@ double ExecuteBranchNBound::execute_with_additional_memory(Tree* cur_node)
 	cur_node->cost_matrix = nullptr;
 	cur_node->path_arcs = nullptr;
 
-	//Update list of leaf elems
-	(*leaf_elems).add(tmp_left_tree);
-	delete cur_node;
-
 	tree_elems_count_ += 2;
 
-	(*leaf_elems).add(tmp_right_tree);
+	//Update list of leaf elems
+	if (tmp_left_tree->lower_bound < cur_best_trip)
+	{
+		(*leaf_elems).add(tmp_left_tree);
+	}
+	else
+	{
+		delete tmp_left_tree;
+	}
+
+	delete cur_node;
 
 	if(tmp_matrix->rows() <= 2)
 	{
@@ -158,6 +164,15 @@ double ExecuteBranchNBound::execute_with_additional_memory(Tree* cur_node)
 		tmp_right_tree->is_final = true;
 		tmp_right_tree->path_weight = matr_min_elem + tmp_right_tree->lower_bound;
 		return matr_min_elem + tmp_right_tree->lower_bound;
+	}
+
+	if (tmp_right_tree->lower_bound < cur_best_trip)
+	{
+		(*leaf_elems).add(tmp_right_tree);
+	}
+	else
+	{
+		delete tmp_right_tree;
 	}
 
 	return -1;

@@ -308,7 +308,14 @@ void Matrix::print_matrix()
 
 void Matrix::creat_test_matrix()
 {
-
+	/*
+	matrix[0] = new double[7]{ 0, 1, 2, 3, 4, 5, 6 };
+	matrix[1] = new double[7]{ 1, DBL_MAX,	20,	18,	12,	8 };
+	matrix[2] = new double[7]{ 2, 5,	DBL_MAX,	14,	7,	11 };
+	matrix[3] = new double[7]{ 3, 12,	18,	DBL_MAX,	6, 11 };
+	matrix[4] = new double[7]{ 4, 11,	17,	11,	DBL_MAX,	12 };
+	matrix[5] = new double[7]{ 5, 5,	5,	5,	5,	DBL_MAX };
+	*/
 	/*
 	matrix[0] = new int[7]{ 0, 1, 2, 3, 4, 5, 6 };
 	matrix[1] = new int[7]{ 1, INT_MAX,	26,	42,	15,	29,	25 };
@@ -449,6 +456,7 @@ void Matrix::create_symmetric()
 void Matrix::add_delta(double delta, int mode)
 {
 	double eps;
+	int targetRow, targetColumn, targetRowId, targetColId;
 
 	switch (mode)
 	{
@@ -459,18 +467,29 @@ void Matrix::add_delta(double delta, int mode)
 			{
 				if (i == j)
 					continue;
-				matrix[i][j] += eps;
-				matrix[j][i] -= eps;
+				matrix[i][j] += eps * matrix[i][j];
+				matrix[j][i] -= eps * matrix[j][i];
 			}
 		break;
+	//case 2:
+	//	eps = delta / 2.0;
+	//	for (int i = 1; i < n_rows - 1; i++)
+	//		for (int j = i; j < n_columns; j++)
+	//		{
+	//			if (i == j)
+	//				continue;
+
+	//			matrix[i][j] -= eps;
+	//			matrix[j][i] += eps;
+	//		}
+	//	break;
 	case 2:
-		eps = delta / 2.0;
+		eps = delta;
 		for (int i = 1; i < n_rows - 1; i++)
 			for (int j = i; j < n_columns; j++)
 			{
 				if (i == j)
 					continue;
-
 				matrix[i][j] -= eps;
 				matrix[j][i] += eps;
 			}
@@ -482,20 +501,37 @@ void Matrix::add_delta(double delta, int mode)
 			{
 				if (i == j)
 					continue;
-				matrix[i][j] -= eps;
-				matrix[j][i] += eps;
+				matrix[i][j] += eps * matrix[i][j];
+				//matrix[j][i] += eps;
 			}
 		break;
 	case 4:
 		eps = delta;
+		targetRow = (n_rows + 1) / 2;
+		for (int j = 1; j < n_columns; j++)
+		{
+			if (targetRow == j)
+				continue;
+
+			matrix[targetRow][j] += eps * matrix[targetRow][j];
+		}
+		break;
+	case 5:
+		eps = delta;
+		targetColumn = (n_rows + 1) / 2;
 		for (int i = 1; i < n_rows - 1; i++)
-			for (int j = i; j < n_columns; j++)
-			{
-				if (i == j)
-					continue;
-				matrix[i][j] += eps;
-				//matrix[j][i] += eps;
-			}
+		{
+			if (i == targetColumn)
+				continue;
+
+			matrix[i][targetColumn] += eps * matrix[i][targetColumn];
+		}
+		break;
+	case 6:
+		eps = delta;
+		targetRowId = rand() % (n_rows - 1) + 1;
+		targetColId = rand() % (n_columns - 1) + 1;
+		matrix[targetRowId][targetColId] += eps * matrix[targetRowId][targetColId];
 		break;
 	default:
 		break;

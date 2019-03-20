@@ -12,7 +12,7 @@ private:
 	double best_trip_;
 	int tree_elems_count_;
 
-	double execute_with_additional_memory(Tree*);
+	double execute_with_additional_memory(Tree*, double);
 	Tree* get_next_tree_node(double*);
 
 public:
