@@ -430,8 +430,35 @@ void Matrix::create_asyn_matrix(double delta, int mode, double max_value)
 	}
 }
 
+//void Matrix::create_symmetric()
+//{
+//	//Store indecies in matrix
+//	for (int i = 0; i < n_columns; i++)
+//		matrix[0][i] = i;
+//	for (int i = 0; i < n_rows; i++)
+//		matrix[i][0] = i;
+//
+//	for (int i = 1; i < n_rows; i++)
+//		for (int j = i; j < n_columns; j++)
+//		{
+//			if (i == j)
+//			{
+//				matrix[i][j] = DBL_MAX;
+//				continue;
+//			}
+//			//Random generation
+//			double rnd_value = rand() % 35 + 6;
+//			matrix[i][j] = rnd_value;
+//			matrix[j][i] = rnd_value;
+//		}
+//}
+
 void Matrix::create_symmetric()
 {
+	std::random_device rd;
+	std::mt19937 gen(rd());
+	std::uniform_real_distribution<> dis(0.0, 1.0);
+
 	//Store indecies in matrix
 	for (int i = 0; i < n_columns; i++)
 		matrix[0][i] = i;
@@ -447,7 +474,7 @@ void Matrix::create_symmetric()
 				continue;
 			}
 			//Random generation
-			double rnd_value = rand() % 35 + 6;
+			double rnd_value = dis(gen);
 			matrix[i][j] = rnd_value;
 			matrix[j][i] = rnd_value;
 		}
@@ -461,7 +488,7 @@ void Matrix::add_delta(double delta, int mode)
 	switch (mode)
 	{
 	case 1:
-		eps = delta / 2.0;
+		eps = delta;
 		for (int i = 1; i < n_rows; i++)
 			for (int j = i; j < n_columns; j++)
 			{
@@ -471,18 +498,6 @@ void Matrix::add_delta(double delta, int mode)
 				matrix[j][i] -= eps * matrix[j][i];
 			}
 		break;
-	//case 2:
-	//	eps = delta / 2.0;
-	//	for (int i = 1; i < n_rows - 1; i++)
-	//		for (int j = i; j < n_columns; j++)
-	//		{
-	//			if (i == j)
-	//				continue;
-
-	//			matrix[i][j] -= eps;
-	//			matrix[j][i] += eps;
-	//		}
-	//	break;
 	case 2:
 		eps = delta;
 		for (int i = 1; i < n_rows - 1; i++)
@@ -490,8 +505,9 @@ void Matrix::add_delta(double delta, int mode)
 			{
 				if (i == j)
 					continue;
-				matrix[i][j] -= eps;
-				matrix[j][i] += eps;
+
+				matrix[i][j] -= eps * matrix[i][j];
+				matrix[j][i] += eps * matrix[j][i];
 			}
 		break;
 	case 3:
@@ -501,8 +517,8 @@ void Matrix::add_delta(double delta, int mode)
 			{
 				if (i == j)
 					continue;
+
 				matrix[i][j] += eps * matrix[i][j];
-				//matrix[j][i] += eps;
 			}
 		break;
 	case 4:
@@ -532,6 +548,7 @@ void Matrix::add_delta(double delta, int mode)
 		targetRowId = rand() % (n_rows - 1) + 1;
 		targetColId = rand() % (n_columns - 1) + 1;
 		matrix[targetRowId][targetColId] += eps * matrix[targetRowId][targetColId];
+
 		break;
 	default:
 		break;
